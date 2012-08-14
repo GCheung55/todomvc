@@ -113,6 +113,8 @@
         onClickToggleAll: function(e, element){
             this.fireEvent('toggleComplete', ['completed', element.get('checked')]);
 
+            this.fireEvent('triggerFilter');
+
             return this
         },
 

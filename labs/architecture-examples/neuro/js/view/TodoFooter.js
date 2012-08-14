@@ -24,8 +24,6 @@
 
             connector: {
                 collectionToFooter: {
-                    // Connect 'filter' event with Collection/TodoList.filterList method
-                    'filter': 'filterList',
                     'clearCompleted': 'clearCompleted'
                 },
                 mainToFooter: {

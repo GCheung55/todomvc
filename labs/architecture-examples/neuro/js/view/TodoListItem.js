@@ -24,8 +24,6 @@
              */
             events: {
                 'dblclick:relay(label)': 'onEdit',
-                // 'blur:relay(input.edit)': 'onUpdate',
-                // 'keyup:relay(input.edit)': 'onKeyup',
                 'click:relay(input.toggle)': 'onToggleStatus',
                 'click:relay(button.destroy)': 'destroy'
             },
@@ -63,16 +61,6 @@
             return this;
         },
 
-        update: function(value){
-            if (value) {
-                this.element.removeClass('editing');
-
-                this.fireEvent('update', ['title', value]);
-            }
-
-            return this;
-        },
-
         onUpdate: function(e, element){
             var value = element.get('value').trim();
             
@@ -87,23 +75,6 @@
 
         onUpdateComplete: function(model, prop, complete){
             this.updateComplete(complete);
-
-            return this;
-        },
-
-        onKeyup: function(e, element){
-            var key = e.key,
-                canUpdate = key == 'enter' || key == 'esc';
-            
-            // Revert to the old value
-            if (key == 'esc') {
-                element.set('value', this._previousTitle);
-            }
-
-            // Update the label
-            if (canUpdate) {
-                this.element.fireEvent('blur', [e, element]);
-            }
 
             return this;
         },
@@ -125,12 +96,12 @@
             }).getElement('>');
 
             this.setElement(element);
-var _this = this;
+
             var input = new View.Input({
                 element: element.getElement('input.edit'),
                 connector: {
-                    'keyup:enter': 'update',
-                    'keyup:reset': function(){_this.element.removeClass('editing');}
+                    'keyup:enter': '_onEnter'
+                    , 'keyup:reset': '_onReset'
                 }
             }).connect(this);
 
@@ -141,6 +112,20 @@ var _this = this;
             this.label = this.element.getElement('label');
 
             this.parent(model);
+
+            return this;
+        },
+
+        _onEnter: function(value){
+            if (value) {
+                this.fireEvent('update', ['title', value]);
+            }
+
+            return this;
+        },
+
+        _onReset: function(){
+            this.element.removeClass('editing');
 
             return this;
         }

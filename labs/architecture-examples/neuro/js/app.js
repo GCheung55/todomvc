@@ -49,8 +49,8 @@
 
             var main = views.main = new Todo.View.Main({
                 element: 'main',
-                events: {
-                    'click:relay(#toggle-all)': this.bound('_onClickComplete')
+                connector: {
+                    'clickComplete': '_onClickComplete'
                 },
                 todoItemTemplate: this.templates.todoItem
             });
@@ -59,11 +59,9 @@
 
             var footer = views.footer = new Todo.View.Footer({
                 element: 'footer',
-                events: {
-                    'click:relay(#clear-completed)': this.bound('_onClickClearCompleted')
-                },
                 connector: {
-                    'filter': '_onClickFilter'
+                    'filter': '_onClickFilter',
+                    'clearCompleted': '_onClickClearCompleted'
                 },
                 todoCountTemplate: this.templates.todoCount,
                 todoCompletedTemplate: this.templates.todoCompleted
@@ -125,18 +123,17 @@
             return this;
         },
 
-        _onClickComplete: function(e, element){
-            var checked = element.get('checked'),
-                collection = this.collection;
+        _onClickComplete: function(checked){
+            var collection = this.collection;
 
-            this.collection.invoke('set', 'completed', checked);
+            collection.invoke('set', 'completed', checked);
 
-            this.render(this.collection);
+            this.render(collection);
 
             return this;
         },
 
-        _onClickClearCompleted: function(e, element){
+        _onClickClearCompleted: function(){
             this.collection.clearCompleted();
 
             return this;

@@ -15,6 +15,7 @@
             },
 
             events: {
+                'click:relay(#clear-completed)': '_onClickClearCompleted',
                 'click:relay(#filters a)': '_onClickFilter'
             },
 
@@ -88,6 +89,12 @@
             var filter = element.get('href').replace('#/', '');
 
             this.fireEvent('filter', filter);
+        },
+
+        _onClickClearCompleted: function(e, element){
+            this.fireEvent('clearCompleted');
+
+            return this;
         }
     });
 

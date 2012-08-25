@@ -13,6 +13,10 @@
             elements: {
                 toggleAll: 'toggle-all',
                 list: 'todo-list'
+            },
+
+            events: {
+                'click:relay(#toggle-all)': '_onClickComplete'
             }
         },
 
@@ -93,6 +97,14 @@
             this.elements.list.adopt(elements);
 
             return this.parent.apply(this, arguments);
+        },
+
+        _onClickComplete: function(e, element){
+            var checked = element.get('checked');
+
+            this.fireEvent('clickComplete', checked);
+
+            return this;
         }
     });
     

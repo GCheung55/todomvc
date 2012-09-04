@@ -36,6 +36,10 @@
             }
         },
 
+        /**
+         * Methods used for filtering in filterBy method
+         * @type {Object}
+         */
         filterTypes: {
             active: function(model){
                 return !model.get('completed');
@@ -46,24 +50,10 @@
             }
         },
 
-        setAll: function(prop, value){
-            this.each(function(model){
-                model.set(prop, value);
-            });
-
-            return this;
-        },
-
-        removeTodo: function(id){
-            var model = this.filter(function(m){ return m.get('id') == id; });
-
-            if (model) {
-                this.remove(model);
-            }
-
-            return this;
-        },
-
+        /**
+         * Clear (remove) the completed items from the collection. Destroying the model itself automatically removes it from the collection
+         * @return {Object} The class instance.
+         */
         clearCompleted: function(){
             /**
              * Filter creates a new array of models that match
@@ -81,12 +71,21 @@
             return this
         },
 
+        /**
+         * Count the number of compeleted items in the collection
+         * @return {Number} The number of completed items in the collection
+         */
         countCompleted: function(){
             return this.filter(function(model){return model.get('completed');}).length;
         },
 
+        /**
+         * Filter the collection by a type.
+         * @param  {String} type String refers to a function in filterTypes object that will be used for filtering
+         * @return {Array} An array of filtered items or the array of models.
+         */
         filterBy: function(type){
-            var filtered = type ? this.filter(this.filterTypes[type]) : this._models
+            var filtered = type ? this.filter(this.filterTypes[type]) : this._models;
             
             return filtered;
         }

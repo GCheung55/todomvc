@@ -16,8 +16,8 @@
                  * Connect the change:title event with Views/TodoListItem.updateTitle method
                  * change:title will pass the model, property, and value to the method
                  */
-                'change:title': 'updateTitle',
-                'change:completed': 'onUpdateComplete',
+                'change:title': '_onUpdateTitle',
+                'change:completed': '_onUpdateComplete',
                 'destroy': 'destroy'
             }
         }

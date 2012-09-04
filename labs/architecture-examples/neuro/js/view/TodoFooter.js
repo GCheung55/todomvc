@@ -39,12 +39,6 @@
             return this;
         },
 
-        clearCompleted: function(){
-            this.fireEvent('clearCompleted');
-
-            return this;
-        },
-
         updateCount: function(count){
             count = this.options.todoCountTemplate.substitute({
                 count: count,

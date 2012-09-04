@@ -23,8 +23,8 @@
              * Method names refer to the method on this View class.
              */
             events: {
-                'dblclick:relay(label)': 'onEdit',
-                'click:relay(input.toggle)': 'onToggleStatus',
+                'dblclick:relay(label)': '_onEdit',
+                'click:relay(input.toggle)': '_onToggleStatus',
                 'click:relay(button.destroy)': 'destroy'
             },
             
@@ -35,83 +35,95 @@
             }
         },
 
-        updateTitle: function(model, prop, title){
-            if (title != undefined) {
-                this.label.set('html', title);
-            }
-
-            return this;
-        },
-
+        /**
+         * Mark the element as completed
+         * @param  {Boolean} bool Boolean used to add/remove 'completed' class on the element. Also used to check/uncheck the completedInput element
+         * @return {Object} The class instance.
+         */
         updateComplete: function(bool){
             this.element[bool ? 'addClass' : 'removeClass']('completed');
-            this.completedInput.set('checked', bool);
+            this.elements.completed.set('checked', bool);
             return this;
         },
 
-        onEdit: function(e, element){
-            var value = this._previousTitle = element.get('html');
+        /**
+         * Cleanup the stored elements and trigger the parent method to continue cleanup.
+         * @return {[type]} [description]
+         */
+        destroy: function(){
+            Object.each(this.elements, Element.destroy);
 
-            this.editInput.set('value', value);
-
-            this.element.addClass('editing');
-
-            this.editInput.fireEvent('focus').focus();
-
-            return this;
+            return this.parent.apply(this, arguments);
         },
 
-        onUpdate: function(e, element){
-            var value = element.get('value').trim();
-            
-            if (value) {
-                this.element.removeClass('editing');
-
-                this.fireEvent('update', ['title', value]);
-            }
-
-            return this;
-        },
-
-        onUpdateComplete: function(model, prop, complete){
-            this.updateComplete(complete);
-
-            return this;
-        },
-
-        onToggleStatus: function(e, element){
-            var hasClass = this.element.hasClass('completed');
-            this.updateComplete(hasClass);
-
-            this.fireEvent('toggleStatus', ['completed', !hasClass]);
-
-            return this;
-        },
-
+        /**
+         * Render the view.
+         * @param  {Object} model The model instance used to render the view.
+         * @return {Object} The class instance.
+         */
         render: function(model){
+            // Connect this view with the model one-way binding.
             this.connect(model);
 
+            // Create a proxy element with the html from the template
             var element = new Element('div', {
                 html: this.options.template.substitute(model.getData())
             }).getElement('>');
 
+            // Set the element so that events get attached to it and the element gets stored in the class instance.
             this.setElement(element);
 
+            this.elements = {
+                edit: this.element.getElement('input.edit'),
+                completed: this.element.getElement('input.toggle'),
+                label: this.element.getElement('label')
+            };
+
+            // Create an input view to handle keyup events for enter and reset behaviors.
             var input = new View.Input({
-                element: element.getElement('input.edit'),
+                element: this.elements.edit,
                 connector: {
                     'keyup:enter': '_onEnter'
                     , 'keyup:reset': '_onReset'
                 }
             }).connect(this);
 
-            this.editInput = this.element.getElement('input.edit');
+            // Execute the parent method, which will trigger the render event.
+            return this.parent(model);
+        },
 
-            this.completedInput = this.element.getElement('input.toggle');
+        _onEdit: function(e, element){
+            var value = this._previousTitle = element.get('html'),
+                editElement = this.elements.edit;
 
-            this.label = this.element.getElement('label');
+            editElement.set('value', value);
 
-            this.parent(model);
+            this.element.addClass('editing');
+
+            editElement.fireEvent('focus').focus();
+
+            return this;
+        },
+
+        _onUpdateTitle: function(model, prop, title){
+            if (title != undefined) {
+                this.elements.label.set('html', title);
+            }
+
+            return this;
+        },
+
+        _onUpdateComplete: function(model, prop, complete){
+            this.updateComplete(complete);
+
+            return this;
+        },
+
+        _onToggleStatus: function(e, element){
+            var hasClass = this.element.hasClass('completed');
+            this.updateComplete(hasClass);
+
+            this.fireEvent('toggleStatus', ['completed', !hasClass]);
 
             return this;
         },

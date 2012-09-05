@@ -7,6 +7,8 @@
     var Main = new Class({
         Extends: Neuro.View,
 
+        items: {},
+
         options: {
             todoItemTemplate:'',
 
@@ -73,20 +75,32 @@
          * @return {Object} The class instance.
          */
         addTodo: function(model){
-            var todoItem = new View.TodoListItem({
-                template: this.options.todoItemTemplate
-            });
+            var id = model.get('id'),
+                todoItem = new View.TodoListItem({
+                    template: this.options.todoItemTemplate
+                });
 
             // Connect the view with the model both ways.
             todoItem.connect(model, true);
 
+            // Store todoItem view
+            this.items[id] = todoItem;
+
             // Render the view with the model data.
             todoItem.render(model);
 
-            // Silently set the view because we don't need to trigger change to the model.
-            model.silence(function(){
-                model.set('view', todoItem);
-            });
+            return this;
+        },
+
+        /**
+         * Remove the view from the items array based on the model's id.
+         * @param  {Object} model The model used to reference the view.
+         * @return {Object} The class instance.
+         */
+        removeTodo: function(model){
+            var id = model.get('id');
+
+            delete this.items[id];
 
             return this;
         },
@@ -129,10 +143,11 @@
          * @return {Object} The class instance.
          */
         render: function(collection, filterType){
-            var elements,
                 // Count the number of completed items in the collection
-                completeCount = collection.countCompleted(),
-                count = collection.length;
+            var completeCount = collection.countCompleted(),
+                count = collection.length,
+                models = collection.filterBy(filterType),
+                list = this.elements.list, items;
 
             // Check/uncheck the completed checkbox based on whether citems in the collection are compeleted or not
             this.toggleCompleted(completeCount == count);
@@ -140,14 +155,22 @@
             // Show/hide the element based on the count
             this.toggleMain(count);
 
-            // Prepare the list element by emptying it first.
-            this.elements.list.empty();
-
             // Retrieve the elements from the collection by filter
-            elements = collection.filterBy(filterType).invoke('get', 'view');
+            // elements = collection.filterBy(filterType).invoke('get', 'view');
+            items = models.map(function(model){
+                var id = model.get('id');
 
-            // Have the list element adopt all the elements that have been filtered from the collection
-            this.elements.list.adopt(elements);
+                return this.items[id];
+            }, this);
+
+            // Update the list only if there are items
+            if (items.length) {
+                // Prepare the list element by emptying it first.
+                list.empty();
+
+                // Have the list element adopt all the elements that have been filtered from the collection
+                list.adopt(items);
+            }
 
             // Execute the parent method, which will trigger the render event.
             return this.parent.apply(this, arguments);

@@ -48,10 +48,13 @@
 
         /**
          * Cleanup the stored elements and trigger the parent method to continue cleanup.
-         * @return {[type]} [description]
+         * Element.destroy will automatically handle destorying child nodes.
+         * @return {Object} The class instance.
          */
         destroy: function(){
-            Object.each(this.elements, Element.destroy);
+            Object.map(this.elements, function(val, key, obj){
+                return delete obj[key];
+            });
 
             return this.parent.apply(this, arguments);
         },

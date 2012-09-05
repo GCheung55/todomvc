@@ -27,6 +27,7 @@
             var collection = this.collection = new Todo.Collection.TodoList([], {
                 connector: {
                     add: '_addTodo'
+                    , remove: '_removeTodo'
                     , change: 'render'
                     , 'change:model': 'render'
                 }
@@ -119,6 +120,12 @@
 
         _addTodo: function(collection, model){
             this.views.main.addTodo(model);
+
+            return this;
+        },
+
+        _removeTodo: function(collection, model){
+            this.views.main.removeTodo(model);
 
             return this;
         },

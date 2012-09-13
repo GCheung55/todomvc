@@ -133,7 +133,12 @@
         _onClickComplete: function(checked){
             var collection = this.collection;
 
-            collection.invoke('set', 'completed', checked);
+            // Silently set on all models so that change event isn't triggered
+            // otherwise every model that changes would cause the render method to fire.
+            // This is an performance optimization
+            collection.silence(function(){
+                this.invoke('set', 'completed', checked);
+            });
 
             this.render(collection);
 

@@ -163,11 +163,11 @@
                 return this.items[id];
             }, this);
 
+            // Prepare the list element by emptying it first.
+            list.empty();
+
             // Update the list only if there are items
             if (items.length) {
-                // Prepare the list element by emptying it first.
-                list.empty();
-
                 // Have the list element adopt all the elements that have been filtered from the collection
                 list.adopt(items);
             }

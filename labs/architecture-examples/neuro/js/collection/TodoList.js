@@ -62,11 +62,21 @@
              * array of models and destorying a model from the 
              * original array prevents continuation of the forEach loop.
              */
-            this.filter(function(model){
+            var models = this.filter(function(model){
                 return model.get('completed');
-            }).each(function(model){
-                model.destroy();
             });
+
+            if (models) {
+                // Silently destroy the models, otherwise every destroy would fire the collections change event
+                // A drawback here would be that the collection's remove and change:model events won't be triggered
+                // This is an performance optimization
+                this.silence(function(){
+                    models.invoke('destroy');
+                });
+
+                // Manually signal change
+                this.signalChange();
+            }
 
             return this
         },

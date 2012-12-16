@@ -13,7 +13,6 @@
         collection: undefined,
 
         options: {
-            routerPath: '',
             templates: {
                 todoItem: document.id('todoItemTemplate'),
                 todoCount: document.id('todoCount'),
@@ -55,7 +54,7 @@
             var _this = this;
 
             var router = this.router = new Neuro.Router({
-                pattern: this.options.initialPath + '#/:filter:',
+                pattern: '#/:filter:',
                 callback: function(route, filter){
                     _this._onClickFilter(filter);
                 }
@@ -209,9 +208,7 @@
     });
 
     window.App = new App({
-        element: 'todoapp',
-        // initialPath: '/labs/architecture-examples/neuro/'
-        initialPath: ''
+        element: 'todoapp'
     });
 
 })( window );

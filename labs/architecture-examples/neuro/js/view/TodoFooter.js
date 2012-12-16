@@ -11,6 +11,7 @@
             elements: {
                 count: 'todo-count',
                 clearCompleted: 'clear-completed',
+                filters: '#filters a',
                 currentFilter: 'a.selected'
             },
 
@@ -29,12 +30,22 @@
             this.elements = {
                 count: document.id(this.options.elements.count),
                 clearCompleted: document.id(this.options.elements.clearCompleted),
+                filters: this.element.getElements(this.options.elements.filters),
                 currentFilter: this.element.getElement(this.options.elements.currentFilter)
             };
         },
 
         toggleFooter: function(bool){
             this.element[bool ? 'removeClass' : 'addClass']('hidden');
+
+            return this;
+        },
+
+        setCurrentFilter: function(element){
+            if (this.elements.currentFilter != element) {
+                this.elements.currentFilter.removeClass('selected');
+                this.elements.currentFilter = element.addClass('selected');
+            }
 
             return this;
         },
@@ -76,13 +87,15 @@
         },
 
         _onClickFilter: function(e, element){
-            this.elements.currentFilter.removeClass('selected');
+            e.preventDefault();
 
-            this.elements.currentFilter = element.addClass('selected');
+            this.setCurrentFilter(element);
 
-            var filter = element.get('href').replace('#/', '');
+            var filter = element.get('href');
 
-            this.fireEvent('filter', filter);
+            History.push(filter);
+
+            this.fireEvent('filter', filter.replace('#/', ''));
         },
 
         _onClickClearCompleted: function(e, element){

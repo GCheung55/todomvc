@@ -9,7 +9,7 @@
 
     // Used to test a non-empty string
     var strValidator = function(str){ 
-        return Type.isString(str) && str.length 
+        return Type.isString(str) && str.length;
     };
 
     /**
@@ -21,12 +21,14 @@
 
         options: {
             primaryKey: 'id',
-            Model: Todo.Model.TodoListItem,
-            modelOptions: {
-                defaults: {
-                    id: '',
-                    title: '',
-                    completed: false
+            Model: {
+                constructor: Todo.Model.TodoListItem,
+                options: {
+                    defaults: {
+                        id: '',
+                        title: '',
+                        completed: false
+                    }
                 }
             },
             validators: {
